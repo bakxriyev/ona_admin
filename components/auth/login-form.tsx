@@ -16,6 +16,8 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -28,7 +30,7 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-      const response = await fetch("https://b.onabolaclinic.uz/auth/login", {
+      const response = await fetch(`${BACKEND_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,13 +79,6 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-8 left-20 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-      </div>
-
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
@@ -93,10 +88,10 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
 
               <div className="mt-8 text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-teal-500"></div>
-                  <span className="text-2xl font-bold text-white">"SOG`LOM ONA BOLA" CLINIC</span>
+                
+                  <span className="text-2xl font-bold text-white mb-24">"SOG`LOM ONA BOLA" CLINIC</span>
                 </div>
-                <p className="text-gray-300 text-lg">Empowering Healthcare, One Click at a Time</p>
+               
               </div>
             </div>
 
@@ -159,16 +154,7 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
                   </div>
 
                   {/* Forgot password link */}
-                  <div className="flex justify-end">
-                    <a
-                      href="https://t.me/yourbot"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium"
-                    >
-                      Forgot Password?
-                    </a>
-                  </div>
+              
 
                   {/* Error message */}
                   {error && (

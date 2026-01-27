@@ -1,8 +1,8 @@
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030"
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const response = await fetch(`${BACKEND_URL}/insurance/${params.id}`)
+    const response = await fetch(`${BACKEND_URL}/users/${params.id}`)
     if (!response.ok) throw new Error("Not found")
     return Response.json(await response.json())
   } catch (error) {
@@ -12,10 +12,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
-    const formData = await request.formData()
-    const response = await fetch(`${BACKEND_URL}/insurance/${params.id}`, {
+    const body = await request.json()
+    const response = await fetch(`${BACKEND_URL}/users/${params.id}`, {
       method: "PUT",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     })
     if (!response.ok) throw new Error("Failed to update")
     return Response.json(await response.json())
@@ -26,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
-    const response = await fetch(`${BACKEND_URL}/insurance/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/users/${params.id}`, {
       method: "DELETE",
     })
     if (!response.ok) throw new Error("Failed to delete")

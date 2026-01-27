@@ -2,7 +2,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
 export async function GET() {
   try {
-    const response = await fetch(`${BACKEND_URL}/admin`, {
+    const response = await fetch(`${BACKEND_URL}/users`, {
       headers: { "Content-Type": "application/json" },
     })
     if (!response.ok) throw new Error("Failed to fetch")
@@ -15,7 +15,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const response = await fetch(`${BACKEND_URL}/admin`, {
+    const response = await fetch(`${BACKEND_URL}/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

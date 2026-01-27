@@ -12,6 +12,7 @@ import { ServicesManagement } from "@/components/pages/services-management"
 import { InsuranceManagement } from "@/components/pages/insurance-management"
 import { CareerManagement } from "@/components/pages/career-management"
 import { DirectionManagement } from "@/components/pages/direction-management"
+import { UserManagement } from "../pages/zayafka-management"
 
 interface ProtectedLayoutProps {
   adminData: any
@@ -41,6 +42,8 @@ export function ProtectedLayout({ adminData, onLogout }: ProtectedLayoutProps) {
         return <CareerManagement />
       case "direction":
         return <DirectionManagement />
+      case "zayafka":
+        return <UserManagement/>
       default:
         return <Dashboard />
     }
