@@ -28,8 +28,7 @@ export function InsuranceForm({ insurance, onSave, onCancel, setToast }: Insuran
       reader.readAsDataURL(file)
     }
   }
-       const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL
-
+       const BACKEND_URL = "https://b.onabolaclinic.uz"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

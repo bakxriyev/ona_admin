@@ -23,7 +23,7 @@ export function DoctorForm({ doctor, onSave, onCancel, setToast }: DoctorFormPro
   )
   const [showDirectionDropdown, setShowDirectionDropdown] = useState(false)
   
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
+  const BACKEND_URL = "https://b.onabolaclinic.uz"
   const [photoPreview, setPhotoPreview] = useState(
     doctor?.photo ? `${BACKEND_URL}/uploads/doctor/${doctor.photo}` : null,
   )

@@ -32,7 +32,7 @@ export function Dashboard() {
 
   const fetchStats = async () => {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
+      const backendUrl = "https://b.onabolaclinic.uz"
 
       // Create all promises with timeout
       const fetchWithTimeout = (url: string, timeout = 5000) => {

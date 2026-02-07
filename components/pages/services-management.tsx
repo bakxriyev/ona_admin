@@ -28,8 +28,7 @@ export function ServicesManagement() {
   const [viewingServiceDetails, setViewingServiceDetails] = useState<{id: number, name: string} | null>(null)
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
 
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030"
-
+  const BACKEND_URL = "https://b.onabolaclinic.uz"
   useEffect(() => {
     fetchServices()
   }, [])

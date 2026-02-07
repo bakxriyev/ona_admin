@@ -43,7 +43,7 @@ export function AdminManagement() {
     filterAdmins()
   }, [admins, searchQuery, showInactive])
 
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030"
+  const BACKEND_URL = "https://b.onabolaclinic.uz"
 
   const fetchAdmins = async () => {
     try {

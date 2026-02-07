@@ -16,7 +16,8 @@ interface NewsFormProps {
 export function NewsForm({ news, onSave, onCancel, setToast }: NewsFormProps) {
   const [formData, setFormData] = useState(news || {})
   const [loading, setLoading] = useState(false)
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL 
+  
+  const BACKEND_URL = "https://b.onabolaclinic.uz"
 
   const [photoPreview, setPhotoPreview] = useState(news?.photo ? `${BACKEND_URL}/uploads/news/${news.photo}` : null)
   const [videoPreview, setVideoPreview] = useState(news?.video ? `${BACKEND_URL}/uploads/news/${news.video}` : null)
