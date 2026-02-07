@@ -30,7 +30,7 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-      const response = await fetch(`${BACKEND_URL}/auth/login`, {
+      const response = await fetch(`https://b.onabolaclinic.uz/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
