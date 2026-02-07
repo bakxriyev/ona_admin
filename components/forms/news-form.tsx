@@ -85,19 +85,19 @@ export function NewsForm({ news, onSave, onCancel, setToast }: NewsFormProps) {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
-          placeholder="Title (English) *"
+          placeholder="Pastki qism yozuvi (O`zbek tilida) *"
           value={formData.title || ""}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
         />
         <Input
-          placeholder="Title (Russian) *"
+          placeholder="Pastki qism yozuvi (Rus tilida) *"
           value={formData.title_ru || ""}
           onChange={(e) => setFormData({ ...formData, title_ru: e.target.value })}
           required
         />
         <textarea
-          placeholder="Description (English) *"
+          placeholder="Pastki qism yozuvi (O`zbek tilida) *"
           value={formData.description || ""}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           className="w-full p-2 border rounded"
@@ -105,7 +105,7 @@ export function NewsForm({ news, onSave, onCancel, setToast }: NewsFormProps) {
           required
         />
         <textarea
-          placeholder="Description (Russian) *"
+          placeholder="Pastki qism yozuvi (Rus tilida) *"
           value={formData.description_ru || ""}
           onChange={(e) => setFormData({ ...formData, description_ru: e.target.value })}
           className="w-full p-2 border rounded"

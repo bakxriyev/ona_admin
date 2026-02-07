@@ -219,7 +219,7 @@ export function DoctorManagement() {
               }
             }}
             title={editingDoctor ? "Edit Doctor" : "Add New Doctor"}
-            size="lg"
+         
           >
             <DoctorForm
               doctor={editingDoctor}
