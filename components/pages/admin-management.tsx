@@ -43,7 +43,7 @@ export function AdminManagement() {
     filterAdmins()
   }, [admins, searchQuery, showInactive])
 
-  const BACKEND_URL = "https://b.onabolaclinic.uz"
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030"
 
   const fetchAdmins = async () => {
     try {
@@ -197,7 +197,6 @@ export function AdminManagement() {
         isOpen={showForm}
         onClose={() => setShowForm(false)}
         title={editingAdmin ? "Adminni Tahrirlash" : "Yangi Admin Qo'shish"}
-        className="max-w-2xl"
       >
         <AdminForm
           admin={editingAdmin}

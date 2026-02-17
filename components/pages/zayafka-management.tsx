@@ -7,77 +7,37 @@ import { AdminForm } from "@/components/forms/admin-form"
 import { Toast } from "@/components/ui/toast"
 import { Modal } from "@/components/ui/modal"
 
-// ====================== Pagination Komponentlari ======================
 function Pagination({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <nav className={`flex items-center gap-2 ${className}`}>{children}</nav>
 }
 
-function PaginationPrevious({
-  onClick,
-  disabled,
-  className = "",
-}: {
-  onClick: () => void
-  disabled: boolean
-  className?: string
-}) {
+function PaginationPrevious({ onClick, disabled, className = "" }: { onClick: () => void; disabled: boolean; className?: string }) {
   return (
-    <Button
-      variant="outline"
-      onClick={onClick}
-      disabled={disabled}
-      className={`border-emerald-300 text-emerald-600 hover:bg-emerald-100 ${className}`}
-    >
+    <Button variant="outline" onClick={onClick} disabled={disabled} className={`border-emerald-300 text-emerald-600 hover:bg-emerald-100 ${className}`}>
       Oldingi
     </Button>
   )
 }
 
-function PaginationNext({
-  onClick,
-  disabled,
-  className = "",
-}: {
-  onClick: () => void
-  disabled: boolean
-  className?: string
-}) {
+function PaginationNext({ onClick, disabled, className = "" }: { onClick: () => void; disabled: boolean; className?: string }) {
   return (
-    <Button
-      variant="outline"
-      onClick={onClick}
-      disabled={disabled}
-      className={`border-emerald-300 text-emerald-600 hover:bg-emerald-100 ${className}`}
-    >
+    <Button variant="outline" onClick={onClick} disabled={disabled} className={`border-emerald-300 text-emerald-600 hover:bg-emerald-100 ${className}`}>
       Keyingi
     </Button>
   )
 }
 
-function PaginationItem({
-  children,
-  active,
-  onClick,
-  className = "",
-}: {
-  children: React.ReactNode
-  active: boolean
-  onClick: () => void
-  className?: string
-}) {
+function PaginationItem({ children, active, onClick, className = "" }: { children: React.ReactNode; active: boolean; onClick: () => void; className?: string }) {
   return (
     <Button
       variant={active ? "default" : "outline"}
       onClick={onClick}
-      className={`${
-        active ? "bg-emerald-600 text-white hover:bg-emerald-700" : "border-emerald-300 text-emerald-600 hover:bg-emerald-100"
-      } ${className}`}
+      className={`${active ? "bg-emerald-600 text-white hover:bg-emerald-700" : "border-emerald-300 text-emerald-600 hover:bg-emerald-100"} ${className}`}
     >
       {children}
     </Button>
   )
 }
-// ===================================================================
 
 interface User {
   id: number
@@ -111,7 +71,7 @@ export function UserManagement() {
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
 
-  const BACKEND_URL = "https://b.onabolaclinic.uz"
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030"
 
   useEffect(() => {
     fetchUsers()
@@ -137,7 +97,6 @@ export function UserManagement() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Ushbu foydalanuvchini o'chirishni istaysizmi?")) return
-
     try {
       const response = await fetch(`${BACKEND_URL}/users/${id}`, { method: "DELETE" })
       if (response.ok) {
@@ -155,7 +114,10 @@ export function UserManagement() {
     setShowForm(false)
     setEditingUser(null)
     fetchUsers()
-    setToast({ message: editingUser ? "Foydalanuvchi muvaffaqiyatli yangilandi" : "Foydalanuvchi muvaffaqiyatli yaratildi", type: "success" })
+    setToast({
+      message: editingUser ? "Foydalanuvchi muvaffaqiyatli yangilandi" : "Foydalanuvchi muvaffaqiyatli yaratildi",
+      type: "success",
+    })
   }
 
   const handleRefresh = () => {
@@ -169,38 +131,41 @@ export function UserManagement() {
     }
   }
 
-  // Sana va vaqtni formatlash funksiyalari (Toshkent vaqti zonasida, uzbek tilida)
+  // ✅ To'g'ri sana formatlash - "2025-02-18" → "18 Fevral 2025"
   const formatDate = (dateString: string) => {
+    if (!dateString) return "-"
     try {
-      const date = new Date(dateString)
-      return new Intl.DateTimeFormat('uz-UZ', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        timeZone: 'Asia/Tashkent'
-      }).format(date)
+      const cleanDate = dateString.split("T")[0] // ISO bo'lsa T dan oldingi qism
+      const [year, month, day] = cleanDate.split("-")
+      const months = [
+        "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
+        "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr",
+      ]
+      return `${parseInt(day)} ${months[parseInt(month) - 1]} ${year}`
     } catch {
-      return dateString // Xato bo'lsa, originalni qaytar
+      return dateString
     }
   }
 
+  // ✅ To'g'ri vaqt formatlash - "14:30" yoki "14:30:00" → "14:30"
   const formatTime = (timeString: string) => {
+    if (!timeString) return "-"
     try {
+      // Oddiy "14:30" yoki "14:30:00" format
+      if (!timeString.includes("T")) {
+        return timeString.slice(0, 5)
+      }
+      // ISO format bo'lsa UTC bilan olish
       const date = new Date(timeString)
-      return new Intl.DateTimeFormat('uz-UZ', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Asia/Tashkent'
-      }).format(date)
+      const hours = String(date.getUTCHours()).padStart(2, "0")
+      const minutes = String(date.getUTCMinutes()).padStart(2, "0")
+      return `${hours}:${minutes}`
     } catch {
-      return timeString // Xato bo'lsa, originalni qaytar
+      return timeString
     }
   }
 
-  // Jadval uchun raqamni hisoblash
-  const getRowNumber = (index: number) => {
-    return (currentPage - 1) * limit + index + 1
-  }
+  const getRowNumber = (index: number) => (currentPage - 1) * limit + index + 1
 
   if (loading) {
     return (
@@ -232,10 +197,7 @@ export function UserManagement() {
             <RefreshCw size={20} className="mr-2" /> Yangilash
           </Button>
           <Button
-            onClick={() => {
-              setEditingUser(null)
-              setShowForm(true)
-            }}
+            onClick={() => { setEditingUser(null); setShowForm(true) }}
             className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Plus size={20} className="mr-2" /> Zayafka Qo'shish
@@ -264,15 +226,16 @@ export function UserManagement() {
           <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gradient-to-r from-emerald-50 to-teal-50">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200">№</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200">To'liq Ismi</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200">Bo'lim</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200">Telefon Raqami</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200">Shifokor</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200">Xabar</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200">Qabul Sanasi</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200">Qabul Vaqti</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">Amallar</th>
+                {["№", "To'liq Ismi", "Bo'lim", "Telefon Raqami", "Shifokor", "Xabar", "Qabul Sanasi", "Qabul Vaqti", "Amallar"].map(
+                  (header, i) => (
+                    <th
+                      key={i}
+                      className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-r border-gray-200 last:border-r-0"
+                    >
+                      {header}
+                    </th>
+                  )
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -280,9 +243,7 @@ export function UserManagement() {
                 users.map((user, index) => (
                   <tr
                     key={user.id}
-                    className={`hover:bg-emerald-50 transition-colors duration-200 ${
-                      index % 2 === 0 ? "bg-white" : "bg-emerald-50/30"
-                    }`}
+                    className={`hover:bg-emerald-50 transition-colors duration-200 ${index % 2 === 0 ? "bg-white" : "bg-emerald-50/30"}`}
                   >
                     <td className="px-6 py-4 text-center font-medium text-gray-700 border-r border-gray-200">
                       {getRowNumber(index)}
@@ -297,11 +258,11 @@ export function UserManagement() {
                       {user.phone_number}
                     </td>
                     <td className="px-6 py-4 text-gray-700 whitespace-nowrap border-r border-gray-200">
-                      {user.doctor_name}
+                      {user.doctor_name || "-"}
                     </td>
                     <td className="px-6 py-4 text-gray-700 max-w-xs border-r border-gray-200">
                       <div className="truncate" title={user.message}>
-                        {user.message}
+                        {user.message || "-"}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-700 whitespace-nowrap border-r border-gray-200">
@@ -312,10 +273,7 @@ export function UserManagement() {
                     </td>
                     <td className="px-6 py-4 flex gap-3 justify-center">
                       <button
-                        onClick={() => {
-                          setEditingUser(user)
-                          setShowForm(true)
-                        }}
+                        onClick={() => { setEditingUser(user); setShowForm(true) }}
                         className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 p-2 rounded-lg transition-colors duration-200 border border-blue-200"
                         title="Tahrirlash"
                       >
@@ -346,27 +304,17 @@ export function UserManagement() {
       {/* Pagination */}
       <div className="mt-8 flex justify-center">
         <Pagination>
-          <PaginationPrevious
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          />
+          <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <PaginationItem
-              key={page}
-              active={page === currentPage}
-              onClick={() => handlePageChange(page)}
-            >
+            <PaginationItem key={page} active={page === currentPage} onClick={() => handlePageChange(page)}>
               {page}
             </PaginationItem>
           ))}
-          <PaginationNext
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          />
+          <PaginationNext onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
         </Pagination>
       </div>
 
-      {/* Jadval ma'lumotlari statistikasi */}
+      {/* Stats */}
       <div className="mt-6 flex justify-between items-center text-sm text-gray-600">
         <div className="bg-white px-4 py-2 rounded-lg border border-emerald-200">
           Jami: <span className="font-bold">{totalPages * limit}</span> ta foydalanuvchi

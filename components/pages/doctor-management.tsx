@@ -7,6 +7,19 @@ import { DoctorForm } from "@/components/forms/doctor-form"
 import { Toast } from "@/components/ui/toast"
 import { Modal } from "@/components/ui/modal"
 
+interface Direction {
+  id: string
+  full_name: string
+  title: string
+}
+
+interface DirectionDoctor {
+  id: number
+  doctors_id: string
+  direction_id: string
+  direction?: Direction
+}
+
 interface Doctor {
   id: number
   first_name: string
@@ -16,18 +29,12 @@ interface Doctor {
   education: string
   specialization: string
   photo?: string
-  directionDoctors?: []
-}
-
-interface directionDoctors {
-  id: number
-  full_name: string
-  title: string
+  directionDoctors?: DirectionDoctor[]
 }
 
 export function DoctorManagement() {
   const [doctors, setDoctors] = useState<Doctor[]>([])
-  const [directions, setDirections] = useState<directionDoctors[]>([])
+  const [directions, setDirections] = useState<Direction[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null)
@@ -36,8 +43,7 @@ export function DoctorManagement() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedDirection, setSelectedDirection] = useState<string>("all")
 
-    const BACKEND_URL = "https://b.onabolaclinic.uz"
-
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030"
 
   const fetchDirections = async () => {
     try {
@@ -45,23 +51,66 @@ export function DoctorManagement() {
       if (response.ok) {
         const data = await response.json()
         setDirections(data)
+        return data
       }
     } catch (error) {
       console.error("Failed to load directions:", error)
     }
+    return []
   }
 
   const fetchDoctors = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${BACKEND_URL}/doctor`)
-      if (response.ok) {
-        const data = await response.json()
-        setDoctors(data)
-      } else {
+      
+      // Fetch directions first
+      const directionsData = await fetchDirections()
+      
+      // Fetch doctors
+      const doctorsResponse = await fetch(`${BACKEND_URL}/doctor`)
+      if (!doctorsResponse.ok) {
         setToast({ message: "Failed to load doctors", type: "error" })
+        return
       }
+      
+      const doctorsData = await doctorsResponse.json()
+      
+      // Fetch direction-doctors relationships
+      const directionDoctorsResponse = await fetch(`${BACKEND_URL}/direction-doctors`)
+      if (!directionDoctorsResponse.ok) {
+        setToast({ message: "Failed to load doctor-direction relationships", type: "error" })
+        setDoctors(doctorsData)
+        return
+      }
+      
+      const directionDoctorsData = await directionDoctorsResponse.json()
+      
+      // Map doctors with their directions
+      const enrichedDoctors = doctorsData.map((doctor: Doctor) => {
+        // Find all direction-doctor relationships for this doctor
+        const doctorDirections = directionDoctorsData
+          .filter((dd: any) => dd.doctors_id === doctor.id.toString())
+          .map((dd: any) => {
+            // Find the direction details
+            const direction = directionsData.find((d: Direction) => d.id === dd.direction_id)
+            return {
+              id: dd.id,
+              doctors_id: dd.doctors_id,
+              direction_id: dd.direction_id,
+              direction: direction || null
+            }
+          })
+          .filter((dd: any) => dd.direction !== null) // Remove entries without valid direction
+        
+        return {
+          ...doctor,
+          directionDoctors: doctorDirections
+        }
+      })
+      
+      setDoctors(enrichedDoctors)
     } catch (error) {
+      console.error("Error fetching doctors:", error)
       setToast({ message: "Failed to load doctors", type: "error" })
     } finally {
       setLoading(false)
@@ -76,13 +125,15 @@ export function DoctorManagement() {
       const doctor = doctors.find(d => d.id === id)
       
       if (doctor?.directionDoctors?.length) {
-        try {
-          // Try to delete by doctor ID
-          await fetch(`${BACKEND_URL}/direction-doctors/doctor/${id}`, {
-            method: "DELETE"
-          })
-        } catch (error) {
-          console.error("Failed to delete direction-doctor relationship:", error)
+        // Delete each relationship individually
+        for (const dd of doctor.directionDoctors) {
+          try {
+            await fetch(`${BACKEND_URL}/direction-doctors/${dd.id}`, {
+              method: "DELETE"
+            })
+          } catch (error) {
+            console.error(`Failed to delete direction-doctor relationship ${dd.id}:`, error)
+          }
         }
       }
       
@@ -110,14 +161,13 @@ export function DoctorManagement() {
 
     const matchesDirection =
       selectedDirection === "all" ||
-      doctor.directionDoctors?.some((dd) => dd.id.toString() === selectedDirection)
+      doctor.directionDoctors?.some((dd) => dd.direction_id === selectedDirection)
 
     return matchesSearch && matchesDirection
   })
 
   useEffect(() => {
     fetchDoctors()
-    fetchDirections()
   }, [])
 
   if (loading) {
@@ -183,7 +233,7 @@ export function DoctorManagement() {
                 >
                   <option value="all">All Directions</option>
                   {directions.map((direction) => (
-                    <option key={direction.id} value={direction.id.toString()}>
+                    <option key={direction.id} value={direction.id}>
                       {direction.full_name}
                     </option>
                   ))}
@@ -219,7 +269,6 @@ export function DoctorManagement() {
               }
             }}
             title={editingDoctor ? "Edit Doctor" : "Add New Doctor"}
-         
           >
             <DoctorForm
               doctor={editingDoctor}
@@ -281,18 +330,21 @@ export function DoctorManagement() {
                       <div className="mb-4">
                         <div className="flex items-center gap-1 text-xs font-medium text-gray-500 mb-2">
                           <MapPin size={12} />
-                          <span>Specialty Direction</span>
+                          <span>Specialty Direction{doctor.directionDoctors.length > 1 ? 's' : ''}</span>
                         </div>
-                        {/* <div className="flex flex-wrap gap-1">
-                          {doctor.directionDoctors.map((dd) => (
-                            <span
-                              key={dd.direction.id}
-                              className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            >
-                              {dd.direction.full_name}
-                            </span>
+                        <div className="flex flex-wrap gap-1">
+                          {/* Remove duplicates by direction_id */}
+                          {Array.from(new Map(doctor.directionDoctors.map(dd => [dd.direction_id, dd])).values()).map((dd) => (
+                            dd.direction && (
+                              <span
+                                key={dd.id}
+                                className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              >
+                                {dd.direction.full_name}
+                              </span>
+                            )
                           ))}
-                        </div> */}
+                        </div>
                       </div>
                     ) : (
                       <div className="mb-4 px-3 py-2 bg-amber-50 text-amber-700 rounded-lg border border-amber-200 text-sm">

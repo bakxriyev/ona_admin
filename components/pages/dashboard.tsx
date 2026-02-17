@@ -32,7 +32,7 @@ export function Dashboard() {
 
   const fetchStats = async () => {
     try {
-      const backendUrl = "https://b.onabolaclinic.uz"
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
       // Create all promises with timeout
       const fetchWithTimeout = (url: string, timeout = 5000) => {
@@ -215,41 +215,7 @@ export function Dashboard() {
         </div>
 
         {/* Calendar Widget */}
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <div className="w-1 h-8 bg-emerald-500 rounded-full"></div>
-            Calendar
-          </h2>
-          <div className="space-y-4">
-            <div className="text-center">
-              <p className="text-lg font-bold text-gray-900">December 2024</p>
-            </div>
-            <div className="grid grid-cols-7 gap-2 text-center text-xs font-medium">
-              {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => (
-                <div key={i} className="font-bold text-gray-500 py-2">
-                  {day}
-                </div>
-              ))}
-              {Array.from({ length: 35 }).map((_, i) => {
-                const day = i - 2
-                return (
-                  <div
-                    key={i}
-                    className={`py-2 rounded-lg text-sm font-medium transition-colors ${
-                      day > 0 && day <= 31
-                        ? day === 3
-                          ? "bg-red-500 text-white font-bold shadow-md"
-                          : "text-gray-700 hover:bg-emerald-50 cursor-pointer"
-                        : "text-gray-300"
-                    }`}
-                  >
-                    {day > 0 && day <= 31 ? day : ""}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
+       
       </div>
     </div>
   )

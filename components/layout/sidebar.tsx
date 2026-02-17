@@ -37,8 +37,6 @@ export function Sidebar({
     { id: "news", label: "News", icon: Newspaper },
     { id: "blog", label: "Blog", icon: BookOpen },
     { id: "services", label: "Services", icon: Briefcase },
-    { id: "insurance", label: "Insurance", icon: Shield },
-    { id: "career", label: "Careers", icon: Briefcase },
     { id: "direction", label: "Directions", icon: Compass },
     { id: "zayafka", label: "Zayafkalar", icon: User },
   ]

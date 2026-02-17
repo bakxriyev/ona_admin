@@ -38,7 +38,7 @@ export function BlogForm({ blog, onSave, onCancel, setToast }: BlogFormProps) {
     }
   }
 
-  const BACKEND_URL = "https://b.onabolaclinic.uz"
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
