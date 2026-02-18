@@ -35,22 +35,31 @@ export function ServiceDetailForm({ serviceId, detail, onSave, onCancel, setToas
     setLoading(true)
 
     try {
-      const submitData = {
-        service_id: Number(serviceId),
-        title: formData.title || "",
-        title_ru: formData.title_ru || "",
-        price: formData.price || "",
-        price_ru: formData.price_ru || "",
-        about: formData.about || "",
-        about_ru: formData.about_ru || "",
-      }
-
-      console.log("Yuborilayotgan ma'lumotlar:", submitData)
-
       const url = detail
         ? `${BACKEND_URL}/service-details/${detail.id}`
         : `${BACKEND_URL}/service-details`
-      const method = detail ? "PUT" : "POST"
+      const method = detail ? "PATCH" : "POST"
+
+      const submitData = detail
+        ? {
+            title: formData.title || "",
+            title_ru: formData.title_ru || "",
+            price: formData.price || "",
+            price_ru: formData.price_ru || "",
+            about: formData.about || "",
+            about_ru: formData.about_ru || "",
+          }
+        : {
+            service_id: Number(serviceId),
+            title: formData.title || "",
+            title_ru: formData.title_ru || "",
+            price: formData.price || "",
+            price_ru: formData.price_ru || "",
+            about: formData.about || "",
+            about_ru: formData.about_ru || "",
+          }
+
+      console.log("Yuborilayotgan ma'lumotlar:", submitData)
 
       const response = await fetch(url, {
         method,
@@ -79,23 +88,24 @@ export function ServiceDetailForm({ serviceId, detail, onSave, onCancel, setToas
   return (
     <>
       {/* Overlay */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"
         onClick={onCancel}
       />
-      
+
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-        <div 
+        <div
           className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto"
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Header */}
           <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 rounded-t-2xl flex justify-between items-center z-10">
             <h2 className="text-2xl font-bold">
               {detail ? "Detailni tahrirlash" : "Yangi detail qo'shish"}
             </h2>
-            <button 
-              onClick={onCancel} 
+            <button
+              onClick={onCancel}
               className="hover:bg-white/20 p-2 rounded-full transition-colors"
               type="button"
             >
@@ -187,17 +197,17 @@ export function ServiceDetailForm({ serviceId, detail, onSave, onCancel, setToas
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button 
-                type="submit" 
-                disabled={loading} 
+              <Button
+                type="submit"
+                disabled={loading}
                 className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 flex-1 text-white font-medium"
               >
                 {loading && <Loader2 size={18} className="mr-2 animate-spin" />}
                 {detail ? "Yangilash" : "Qo'shish"}
               </Button>
-              <Button 
-                type="button" 
-                onClick={onCancel} 
+              <Button
+                type="button"
+                onClick={onCancel}
                 className="bg-gray-500 hover:bg-gray-600 flex-1 text-white font-medium"
               >
                 Bekor qilish
