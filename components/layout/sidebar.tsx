@@ -54,7 +54,7 @@ export function Sidebar({
         <div className="flex items-center gap-3 overflow-hidden">
           {/* LOGO */}
           <img
-            src="/logo.jpg"
+            src="/ona.png"
             alt="Logo"
             className={`
               transition-all duration-300
