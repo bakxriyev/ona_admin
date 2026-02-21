@@ -38,7 +38,7 @@ export function DirectionForm({ direction, onSave, onCancel, setToast }: Directi
     }
   }
 
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL
+  const BACKEND_URL = "https://b.onabolaclinic.uz"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

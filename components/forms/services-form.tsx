@@ -40,7 +40,7 @@ export function ServicesForm({ service, onSave, onCancel, setToast }: ServicesFo
     }
   }
 
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL
+  const BACKEND_URL = "https://b.onabolaclinic.uz"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

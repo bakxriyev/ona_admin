@@ -43,7 +43,7 @@ export function DoctorManagement() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedDirection, setSelectedDirection] = useState<string>("all")
 
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030"
+  const BACKEND_URL = "https://b.onabolaclinic.uz"
 
   const fetchDirections = async () => {
     try {
